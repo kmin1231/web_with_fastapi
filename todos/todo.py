@@ -12,6 +12,11 @@ async def app_todo(todo: Todo) -> dict:
         "message": "Todo added successfully."
     }
 
+# $ curl -X POST localhost:8000/todo
+# -H 'accept: application/json'
+# -H 'Content-Type: application/json'
+# -d '{"id": 1, "item": {"item": "First Todo is to finish this book!", "status": "in progress"}}'
+
 @todo_router.get("/todo")
 async def retrieve_todos() -> dict:
     return {
@@ -20,7 +25,13 @@ async def retrieve_todos() -> dict:
 
 # $ curl -X GET localhost:8000/todo
 
-# $ curl -X POST localhost:8000/todo
-# -H 'accept: application/json'
-# -H 'Content-Type: application/json'
-# -d '{"id":1, "item":"First Todo is to finish this book!"}'
+@todo_router.get("/todo/{todo_id}")
+async def get_single_todo(todo_id: int) -> dict:
+    for todo in todo_list:
+        if todo.id == todo_id:
+            return {
+                "todo": todo
+            }
+    return {
+        "message": "Todo with supplied ID doesn't exist."
+    }
