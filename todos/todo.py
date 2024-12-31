@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Path
-from model import Todo
+from model import Todo, TodoItem
 
 todo_router = APIRouter()
 
@@ -12,10 +12,8 @@ async def app_todo(todo: Todo) -> dict:
         "message": "Todo added successfully."
     }
 
-# $ curl -X POST localhost:8000/todo
-# -H 'accept: application/json'
-# -H 'Content-Type: application/json'
-# -d '{"id": 1, "item": {"item": "First Todo is to finish this book!", "status": "in progress"}}'
+# $ curl -X POST localhost:8000/todo -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "item": "First Todo is to finish this book!"}'
+# $ curl -X POST localhost:8000/todo -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "item": {"item": "First Todo is to finish this book!", "status": "in progress"}}'
 
 @todo_router.get("/todo")
 async def retrieve_todos() -> dict:
@@ -37,3 +35,17 @@ async def get_single_todo(todo_id: int = Path(..., title="The ID of the todo to 
     }
 
 # $ curl -X GET localhost:8000/todo/1
+
+@todo_router.put("/todo/{todo_id}")
+async def update_todo(todo_data: TodoItem, todo_id: int = Path(..., title="The ID of the todo to be updated.")) -> dict:
+    for todo in todo_list:
+        if todo.id == todo_id:
+            todo.item = todo_data.item
+            return {
+                "message": "Todo updated successfully."
+            }
+    return {
+        "message": "Todo with supplied ID doesn't exist."
+    }
+
+# $ curl -X PUT localhost:8000/todo/1 -H 'accpet: application/json' -H 'Content-Type: application/json' -d '{"item": "Read the next chapter of the book"}'
