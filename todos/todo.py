@@ -49,3 +49,27 @@ async def update_todo(todo_data: TodoItem, todo_id: int = Path(..., title="The I
     }
 
 # $ curl -X PUT localhost:8000/todo/1 -H 'accpet: application/json' -H 'Content-Type: application/json' -d '{"item": "Read the next chapter of the book"}'
+
+@todo_router.delete("/todo/{todo_id}")
+async def delete_single_todo(todo_id: int) -> dict:
+    for index in range(len(todo_list)):
+        todo = todo_list[index]
+        if todo.id == todo_id:
+            todo_list.pop(index)
+            return {
+                "message": "Todo deleted successfully."
+            }
+    return {
+        "message": "Todo with supplied ID doesn't exist."
+    }
+
+# $ curl -X DELETE localhost:8000/todo/1 -H 'accept: application/json'
+
+@todo_router.delete("/todo")
+async def delete_all_todo() -> dict:
+    todo_list.clear()
+    return {
+        "message": "Todos deleted"
+    }
+
+# $ curl -X DELETE localhost:8000/todo -H 'accept: application/json'
