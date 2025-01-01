@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Path
-from model import Todo, TodoItem
+from model import Todo, TodoItem, TodoItems
 
 todo_router = APIRouter()
 
@@ -15,7 +15,7 @@ async def app_todo(todo: Todo) -> dict:
 # $ curl -X POST localhost:8000/todo -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "item": "First Todo is to finish this book!"}'
 # $ curl -X POST localhost:8000/todo -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "item": {"item": "First Todo is to finish this book!", "status": "in progress"}}'
 
-@todo_router.get("/todo")
+@todo_router.get("/todo", response_model=TodoItems)
 async def retrieve_todos() -> dict:
     return {
         "todos": todo_list
