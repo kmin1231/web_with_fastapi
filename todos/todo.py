@@ -1,35 +1,43 @@
-from fastapi import APIRouter, Path, HTTPException, status
+from fastapi import APIRouter, Path, HTTPException, status, Request, Depends
+from fastapi.templating import Jinja2Templates
 from model import Todo, TodoItem, TodoItems
 
 todo_router = APIRouter()
 
 todo_list = []
 
-@todo_router.post("/todo", status_code=201)
-async def app_todo(todo: Todo) -> dict:
+templates = Jinja2Templates(directory="templates/")
+
+@todo_router.post("/todo")
+async def app_todo(request: Request, todo: Todo = Depends(Todo.as_form)):
+    todo.id = len(todo_list) + 1
     todo_list.append(todo)
-    return {
-        "message": "Todo added successfully."
-    }
+    return templates.TemplateResponse("todo.html", {
+        "request": request,
+        "todos": todo_list
+    })
 
 # $ curl -X POST localhost:8000/todo -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "item": "First Todo is to finish this book!"}'
 # $ curl -X POST localhost:8000/todo -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "item": {"item": "First Todo is to finish this book!", "status": "in progress"}}'
 
 @todo_router.get("/todo", response_model=TodoItems)
-async def retrieve_todos() -> dict:
-    return {
+async def retrieve_todos(request: Request):
+    return templates.TemplateResponse("todo.html", {
+        "request": request,
         "todos": todo_list
-    }
+    })
 
 # $ curl -X GET localhost:8000/todo
 
 @todo_router.get("/todo/{todo_id}")
-async def get_single_todo(todo_id: int = Path(..., title="The ID of the todo to retrieve")) -> dict:
+async def get_single_todo(request: Request, todo_id: int = Path(..., title="The ID of the todo to retrieve")) -> dict:
     for todo in todo_list:
         if todo.id == todo_id:
-            return {
-                "todo": todo
-            }
+            return templates.TemplateResponse(
+                "todo.html", {
+                    "request": request,
+                    "todo": todo
+            })
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Todo with supplied ID doesn't exist",
