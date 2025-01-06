@@ -22,11 +22,11 @@ class Event(SQLModel, table=True):
         }
 
 class EventUpdate(SQLModel):
-    title: Optional[str]
-    image: Optional[str]
-    description: Optional[str]
-    tags: Optional[List[str]]
-    location: Optional[str]
+    title: Optional[str] = None
+    image: Optional[str] = None
+    description: Optional[str] = None
+    tags: Optional[List[str]] = None
+    location: Optional[str] = None
 
     class Config:
         arbitrary_types_allowed = True
