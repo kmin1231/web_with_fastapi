@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Body, HTTPException, status
-from models.events import Event
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from database.connection import get_session
+from models.events import Event, EventUpdate
 from typing import List
 
 event_router = APIRouter(
@@ -27,13 +28,16 @@ async def retrieve_event(id: int) -> Event:
 # $ curl localhost:8000/event/1
 
 @event_router.post("/new")
-async def create_event(body: Event = Body(...)) -> dict:
-    events.append(body)
+async def create_event(new_event: Event, session=Depends(get_session)) -> dict:
+    session.add(new_event)
+    session.commit()
+    session.refresh(new_event)
+
     return {
         "message": "Event created successfully."
     }
 
-# $ curl -X POST localhost:8000/event/new -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "title": "FastAPI Book Launch", "image": "https://linktomyimage.com/image.png", "description": "We will be discussing the contents of the FastAPI book in this event. Ensure to come with your own copy to win gifts!", "tags": ["Python", "fastapi", "book", "launch"], "location": "Google Meet"}'
+# $ curl -X POST localhost:8000/event/new -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "title": "FastAPI Book Launch", "image": "fastapi-book.jpeg", "description": "We will be discussing the contents of the FastAPI book in this event. Ensure to come with your own copy to win gifts!", "tags": ["Python", "fastapi", "book", "launch"], "location": "Google Meet"}'
 
 @event_router.delete("/{id}")
 async def delete_event(id: int) -> dict:
