@@ -44,13 +44,16 @@ async def create_event(new_event: Event, session=Depends(get_session)) -> dict:
 # $ curl -X POST localhost:8000/event/new -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "title": "FastAPI Book Launch", "image": "fastapi-book.jpeg", "description": "We will be discussing the contents of the FastAPI book in this event. Ensure to come with your own copy to win gifts!", "tags": ["Python", "fastapi", "book", "launch"], "location": "Google Meet"}'
 
 @event_router.delete("/{id}")
-async def delete_event(id: int) -> dict:
-    for event in events:
-        if event.id == id:
-            events.remove(event)
-            return {
-                "message": "Event deleted successfully."
-            }
+async def delete_event(id: int, session=Depends(get_session)) -> dict:
+    event = session.get(Event, id)
+
+    if event:
+        session.delete(event)
+        session.commit()
+        return {
+            "message": "Event deleted successfully."
+        }
+
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Events with supplied ID does not exist"
@@ -59,11 +62,22 @@ async def delete_event(id: int) -> dict:
 # $ curl -X DELETE localhost:8000/event/1
 
 @event_router.delete("/")
-async def delete_all_events() -> dict:
-    events.clear()
-    return {
-        "message": "Events deleted successfully."
-    }
+async def delete_all_events(session=Depends(get_session)) -> dict:
+    statement = select(Event)
+    events = session.exec(statement).all()
+    
+    if events:
+        for event in events:
+            session.delete(event)
+        session.commit()
+        return {
+            "message": "Event deleted successfully."
+        }
+    
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No events found to delete"
+    )
 
 # $ curl -X DELETE localhost:8000/event/
 
