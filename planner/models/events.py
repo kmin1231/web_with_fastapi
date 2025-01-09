@@ -1,16 +1,15 @@
-from sqlmodel import JSON, SQLModel, Field, Column
+from beanie import Document
+from sqlmodel import BaseModel
 from typing import List, Optional
 
-class Event(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
+class Event(Document):
     title: str
     image: str
     description: str
-    tags: List[str] = Field(sa_column=Column(JSON))
+    tags: List[str]
     location: str
 
     class Config:
-        arbitrary_types_allowed = True
         json_schema_extra = {
             "example": {
                 "title": "FastAPI BookLaunch",
@@ -21,7 +20,10 @@ class Event(SQLModel, table=True):
             }
         }
 
-class EventUpdate(SQLModel):
+    class Settings:
+        name = "events"
+
+class EventUpdate(BaseModel):
     title: Optional[str] = None
     image: Optional[str] = None
     description: Optional[str] = None
@@ -29,7 +31,6 @@ class EventUpdate(SQLModel):
     location: Optional[str] = None
 
     class Config:
-        arbitrary_types_allowed = True
         json_schema_extra = {
             "example": {
                 "title": "FastAPI BookLaunch",
