@@ -1,5 +1,5 @@
 from beanie import Document
-from sqlmodel import BaseModel
+from pydantic import BaseModel
 from typing import List, Optional
 
 class Event(Document):
