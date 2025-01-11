@@ -22,6 +22,8 @@ async def sign_new_user(user: User) -> dict:
         "message": "User successfully registered!"
     }
 
+# $ curl -X POST localhost:8000/user/signup -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"email": "fastapi@packt.com", "password": "strong!!!", "events": []}'
+
 @user_router.post("/signin")
 async def sign_user_in(user: UserSignIn) -> dict:
     user_exist = await User.find_one(User.email == user.email)
@@ -40,3 +42,5 @@ async def sign_user_in(user: UserSignIn) -> dict:
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid details passed"
     )
+
+# $ curl -X POST localhost:8000/user/signin -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"email": "fastapi@packt.com", "password": "strong!!!"}'
