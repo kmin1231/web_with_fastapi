@@ -41,8 +41,7 @@ async def create_event(body: Event, user: str = Depends(authenticate)) -> dict:
         "message": "Event created successfully."
     }
 
-# $ curl -X POST localhost:8000/event/new -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"id": 1, "title": "FastAPI Book Launch", "image": "fastapi-book.jpeg", "description": "We will be discussing the contents of the FastAPI book in this event. Ensure to come with your own copy to win gifts!", "tags": ["Python", "fastapi", "book", "launch"], "location": "Google Meet"}'
-
+# $ curl -X POST localhost:8000/event/new -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'grant_type=&username=reader%40packt.com&password=exemplary&scope=&client_id=&client_secret='
 
 @event_router.delete("/{id}")
 async def delete_event(id: PydanticObjectId, user: str = Depends(authenticate)) -> dict:
