@@ -53,4 +53,4 @@ async def sign_user_in(user: OAuth2PasswordRequestForm = Depends()) -> dict:
         detail="Invalid details passed"
     )
 
-# $ curl -X POST localhost:8000/user/signin -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"email": "fastapi@packt.com", "password": "strong!!!"}'
+# $ curl -X POST localhost:8000/user/signin -H 'accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -d 'grant_type=&username=reader%40packt.com&password=exemplary&scope=&client_id=&client_secret='
