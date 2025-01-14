@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from auth.jwt_handler import create_access_token
 from database.connection import Database
 
-from models.users import User, UserSignIn
+from models.users import User, TokenResponse
 from auth.hash_password import HashPassword
 
 user_router = APIRouter(
@@ -32,7 +32,7 @@ async def sign_new_user(user: User) -> dict:
 
 # $ curl -X POST localhost:8000/user/signup -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"email": "fastapi@packt.com", "password": "strong!!!", "events": []}'
 
-@user_router.post("/signin")
+@user_router.post("/signin", response_model=TokenResponse)
 async def sign_user_in(user: OAuth2PasswordRequestForm = Depends()) -> dict:
     user_exist = await User.find_one(User.email == user.email)
     if not user_exist:
