@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from auth.jwt_handler import create_access_token
 from database.connection import Database
 
 from models.users import User, UserSignIn
@@ -31,7 +33,7 @@ async def sign_new_user(user: User) -> dict:
 # $ curl -X POST localhost:8000/user/signup -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"email": "fastapi@packt.com", "password": "strong!!!", "events": []}'
 
 @user_router.post("/signin")
-async def sign_user_in(user: UserSignIn) -> dict:
+async def sign_user_in(user: OAuth2PasswordRequestForm = Depends()) -> dict:
     user_exist = await User.find_one(User.email == user.email)
     if not user_exist:
         raise HTTPException(
@@ -39,9 +41,11 @@ async def sign_user_in(user: UserSignIn) -> dict:
             detail="User with email does not exist"
         )
     
-    if user_exist.password == user.password:
+    if hash_password.verify_hash(user.password, user_exist.password):
+        access_token = create_access_token(user_exist.email)
         return {
-            "message": "User signed in sucessfully."
+            "access_token": "User signed in sucessfully.",
+            "token_type": "Bearer"
         }
 
     raise HTTPException(
