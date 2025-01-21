@@ -3,7 +3,7 @@ from datetime import datetime
 
 from fastapi import HTTPException, status
 from jose import jwt, JWTError
-from database.connection import Settings
+from planner.database.connection import Settings
 
 settings = Settings()
 

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from auth.jwt_handler import create_access_token
-from database.connection import Database
+from planner.auth.jwt_handler import create_access_token
+from planner.database.connection import Database
 
-from models.users import User, TokenResponse
-from auth.hash_password import HashPassword
+from planner.models.users import User, TokenResponse
+from planner.auth.hash_password import HashPassword
 
 user_router = APIRouter(
     tags=["User"],

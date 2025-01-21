@@ -2,8 +2,8 @@ from beanie import init_beanie, PydanticObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import Optional, Any, List
 from pydantic import BaseSettings, BaseModel
-from models.users import User
-from models.events import Event
+from planner.models.users import User
+from planner.models.events import Event
 
 class Settings(BaseSettings):
     DATABASE_URL: Optional[str] = None
