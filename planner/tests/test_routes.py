@@ -41,3 +41,28 @@ async def test_get_event(default_client: httpx.AsyncClient, mock_event: Event) -
     assert response.status_code == 200
     assert response.json()["creator"] == mock_event.creator
     assert response.json()["_id"] == str(mock_event.id)
+
+
+@pytest.mark.asyncio
+async def test_post_event(default_client: httpx.AsyncClient, access_token: str) -> None:
+    payload = {
+        "title": "FastAPI Book Launch",
+        "image": "https://linktomyimage.com/image.png",
+        "description": "We will be discussing the contents of the FastAPI book in this event. Ensure to come with your own copy to win gifts!",
+        "tags": ["python", "fastapi", "book", "launch"],
+        "location": "Google Meet",
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    test_response = {
+        "message": "Event created successfully"
+    }
+
+    response = await default_client.post("/event/new", json=payload, headers=headers)
+
+    assert response.status_code == 200
+    assert response.json() == test_response
