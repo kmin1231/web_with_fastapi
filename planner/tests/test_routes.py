@@ -123,3 +123,7 @@ async def test_get_event_again(default_client: httpx.AsyncClient, mock_event: Ev
     assert response.status_code == 200
     assert response.json()["creator"] == mock_event.creator
     assert response.json()["_id"] == str(mock_event.id)
+
+
+# $ pytest tests/test_routes.py
+# in order to make the last test pass, 'assert response.status_code == 404'
